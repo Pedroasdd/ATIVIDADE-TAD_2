@@ -1,0 +1,115 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX_FUNCIONARIOS 10
+
+struct Funcionario {
+    char nome[50];
+    double salario, beneficios, descontos, salario_liquido;
+
+    void Ler() {
+        printf("Digite o nome do funcionario: ");
+        scanf("%s", nome);
+        printf("Digite o salario base, beneficios e descontos: ");
+        scanf("%lf %lf %lf", &salario, &beneficios, &descontos);
+        salario_liquido = salario + beneficios - descontos;
+    }
+
+    void Imprimir() {
+        printf("Nome do funcionario: %s\n", nome);
+        printf("Salario liquido do funcionario: %.2lf\n", salario_liquido);
+    }
+};
+
+struct CadastroFuncionario {
+    struct Funcionario funcionarios[MAX_FUNCIONARIOS];
+    int num_funcionario;
+
+    void cadastro() {
+        printf("Qual a quantidade de funcionarios? (max %d): ", MAX_FUNCIONARIOS);
+        scanf("%d", &num_funcionario);
+
+        if (num_funcionario <= 0 || num_funcionario > MAX_FUNCIONARIOS) {
+            printf("Quantidade invalida de funcionarios. Insira um valor entre 1 e %d.\n", MAX_FUNCIONARIOS);
+            exit(1);
+        }
+    }
+
+    void cadastrarFuncionario() {
+        for (int i = 0; i < num_funcionario; i++) {
+            printf("\nFuncionario %d:\n", i + 1);
+            funcionarios[i].Ler();
+        }
+    }
+
+    void exibirFuncionarios() {
+        printf("\nDados dos funcionarios:\n");
+        for (int i = 0; i < num_funcionario; i++) {
+            printf("\nFuncionario %d:\n", i + 1);
+            funcionarios[i].Imprimir();
+        }
+    }
+
+    void mediaSalarial(){
+        double soma = 0.00;
+        for(int i = 0; i < num_funcionario; i++){
+            soma += funcionarios[i].salario_liquido;
+        }
+        double media = soma / num_funcionario;
+        printf("A media salarial e: %.2lf\n", media);
+    }
+
+    void maiorSalario(){
+        double maior_salario = funcionarios[0].salario_liquido;
+        int indice_maior_salario = 0;
+        for(int i = 1; i < num_funcionario; i++){
+            if(funcionarios[i].salario_liquido > maior_salario){
+                maior_salario = funcionarios[i].salario_liquido;
+                indice_maior_salario = i;
+            }
+        }
+        printf("\nFuncionario com maior salario: %s\n", funcionarios[indice_maior_salario].nome);
+    }
+
+    void exibirMenu() {
+        int opcao;
+
+        do {
+            printf("\nMenu:\n");
+            printf("1. Cadastrar funcionario\n");
+            printf("2. Listar funcionarios\n");
+            printf("3. Visualizar media e quem ganha mais\n");
+            printf("0. Sair\n");
+            printf("Escolha uma opcao: ");
+            scanf("%d", &opcao);
+
+            switch (opcao) {
+                case 1:
+                    cadastrarFuncionario();
+                    break;
+                case 2:
+                    exibirFuncionarios();
+                    break;
+                case 3:
+                    mediaSalarial();
+                    maiorSalario();
+                    break;
+                case 0:
+                    printf("Encerrando o programa.\n");
+                    break;
+                default:
+                    printf("Opcao invalida.\n");
+            }
+        } while (opcao != 0);
+    }
+
+};
+
+int main() {
+    struct CadastroFuncionario cadastro;
+
+    cadastro.cadastro();
+    cadastro.exibirMenu();
+
+    return 0;
+}
