@@ -1,0 +1,116 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define MAX_CLIENTES 50
+
+
+struct Data {
+    int dia;
+    int mes;
+    int ano;
+};
+
+struct Cliente {
+    char nome[50];
+    struct Data data_nascimento;
+    int idade;
+    char sexo;
+
+    void preencherDados() {
+        printf("Nome do cliente: ");
+        scanf("%s", nome);
+
+        printf("Data de nascimento (dia mes ano): ");
+        scanf("%d %d %d", &data_nascimento.dia, &data_nascimento.mes, &data_nascimento.ano);
+
+        printf("Sexo (M/F): ");
+        scanf(" %c", &sexo);
+
+        struct tm *data_atual;
+        time_t t = time(NULL);
+        data_atual = localtime(&t);
+        int ano_atual = data_atual->tm_year + 1900;
+        int mes_atual = data_atual->tm_mon + 1;
+        int dia_atual = data_atual->tm_mday;
+
+        idade = ano_atual - data_nascimento.ano;
+        if (mes_atual < data_nascimento.mes || (mes_atual == data_nascimento.mes && dia_atual < data_nascimento.dia)) {
+            idade--;
+        }
+    }
+
+    void exibirDados() {
+        printf("\nDados do cliente:\n");
+        printf("Nome: %s\n", nome);
+        printf("Data de Nascimento: %02d/%02d/%d\n", data_nascimento.dia, data_nascimento.mes, data_nascimento.ano);
+        printf("Idade: %d\n", idade);
+        printf("Sexo: %c\n", sexo);
+    }
+};
+
+struct CadastroClientes {
+    struct Cliente clientes[MAX_CLIENTES];
+    int num_clientes;
+
+    void solicitarQuantidadeClientes() {
+        printf("Quantos clientes deseja cadastrar? (max %d): ", MAX_CLIENTES);
+        scanf("%d", &num_clientes);
+
+        if (num_clientes <= 0 || num_clientes > MAX_CLIENTES) {
+            printf("Número inválido de clientes.\n");
+            exit(1);
+        }
+    }
+
+    void cadastrarClientes() {
+        for (int i = 0; i < num_clientes; i++) {
+            printf("\nCliente %d:\n", i + 1);
+            clientes[i].preencherDados();
+        }
+    }
+
+    void exibirClientes() {
+        printf("\nDados de todos os clientes:\n");
+        for (int i = 0; i < num_clientes; i++) {
+            clientes[i].exibirDados();
+        }
+    }
+    void exibirMenu() {
+        int opcao;
+
+        do {
+            printf("\nMenu:\n");
+            printf("1. Cadastrar cliente\n");
+            printf("2. Listar clientes\n");
+            printf("0. Sair\n");
+            printf("Escolha uma opcao: ");
+            scanf("%d", &opcao);
+
+            switch (opcao) {
+                case 1:
+                    cadastrarClientes();
+                    break;
+                case 2:
+                    exibirClientes();
+                    break;
+                case 0:
+                    printf("Encerrando o programa.\n");
+                    break;
+                default:
+                    printf("Opção inválida.\n");
+            }
+        } while (opcao != 0);
+    }
+
+};
+
+int main() {
+
+    struct CadastroClientes cadastro;
+
+    cadastro.solicitarQuantidadeClientes();
+    cadastro.exibirMenu();
+
+    return 0;
+}
